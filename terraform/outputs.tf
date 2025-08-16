@@ -105,17 +105,35 @@ output "retail_store_url" {
 }
 
 # =============================================================================
+# ECR REPOSITORIES
+# =============================================================================
+
+output "ecr_repositories" {
+  description = "ECR repository URLs for all microservices"
+  value = {
+    for service, repo in aws_ecr_repository.retail_store_services :
+    service => repo.repository_url
+  }
+}
+
+output "ecr_registry_url" {
+  description = "ECR registry URL"
+  value       = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
+}
+
+# =============================================================================
 # USEFUL COMMANDS
 # =============================================================================
 
 output "useful_commands" {
   description = "Useful commands for managing the cluster"
   value = {
-    get_nodes           = "kubectl get nodes"
-    get_pods_all        = "kubectl get pods -A"
-    get_retail_store    = "kubectl get pods -n retail-store"
-    argocd_apps         = "kubectl get applications -n ${var.argocd_namespace}"
-    ingress_status      = "kubectl get ingress -A"
-    describe_cluster    = "kubectl cluster-info"
+    get_nodes        = "kubectl get nodes"
+    get_pods_all     = "kubectl get pods -A"
+    get_retail_store = "kubectl get pods -n retail-store"
+    argocd_apps      = "kubectl get applications -n ${var.argocd_namespace}"
+    ingress_status   = "kubectl get ingress -A"
+    describe_cluster = "kubectl cluster-info"
+    ecr_login        = "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
   }
 }

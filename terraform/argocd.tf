@@ -33,14 +33,14 @@ resource "helm_release" "argocd" {
           type = "ClusterIP"
         }
         ingress = {
-          enabled = false  # We'll use port-forward for access
+          enabled = false # We'll use port-forward for access
         }
         # Enable insecure mode for easier local access
         extraArgs = [
           "--insecure"
         ]
       }
-      
+
       # Controller configuration
       controller = {
         resources = {
@@ -54,7 +54,7 @@ resource "helm_release" "argocd" {
           }
         }
       }
-      
+
       # Repo server configuration
       repoServer = {
         resources = {
@@ -68,7 +68,7 @@ resource "helm_release" "argocd" {
           }
         }
       }
-      
+
       # Redis configuration
       redis = {
         resources = {
@@ -103,7 +103,7 @@ resource "time_sleep" "wait_for_argocd" {
 
 resource "null_resource" "argocd_apps" {
   depends_on = [time_sleep.wait_for_argocd]
-  
+
   provisioner "local-exec" {
     command = <<-EOT
       echo "Deploying ArgoCD projects and applications..."
@@ -112,7 +112,7 @@ resource "null_resource" "argocd_apps" {
       echo "ArgoCD applications deployed successfully!"
     EOT
   }
-  
+
   # Trigger re-deployment if ArgoCD configuration changes
   triggers = {
     argocd_version = var.argocd_chart_version
